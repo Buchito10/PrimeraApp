@@ -1,6 +1,6 @@
 import axios from "axios";
 async function getUsuario(id) {
-    const url = "https://jsonplaceholder.typicode.com/users/${id}";
+    const url = `https://jsonplaceholder.typicode.com/users/${id}`;
     const usuario = await axios.get(url);
     return usuario.data;
 }
