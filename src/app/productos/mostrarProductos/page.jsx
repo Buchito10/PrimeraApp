@@ -1,5 +1,7 @@
 import BorrarProducto from "@/components/borrarProducto";
 import axios from "axios";
+import Link from "next/link";
+
 async function getProductos(){
     const url="http://localhost:3000/mostrarProductos";
     const productos=await axios.get(url);
@@ -19,7 +21,8 @@ export default async function Productos(){
                         <th>Descripcion</th>
                         <th>Cantidad</th>
                         <th>Precio</th>
-                        <th>Editar/Borrar</th>
+                        <th>Editar</th>
+                        <th>Borrar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,6 +33,7 @@ export default async function Productos(){
                                 <td>{producto.descripcion}</td>
                                 <td>{producto.cantidad}</td>
                                 <td>{producto.precio}</td>
+                                <td><Link href={`/productos/editar/${producto.id}`}>Editar</Link></td>
                                 <td>
                                     <BorrarProducto id={producto.id} />
                                 </td>
