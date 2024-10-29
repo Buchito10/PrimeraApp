@@ -17,24 +17,13 @@ export default function Navbar(){
           <Link className="nav-link" href="/blog">Blog</Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" href="/universidades">Universidades</Link>
+          <Link className="nav-link" href="/usuarios/mostrar">Usuarios</Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" href="/usuarios">Usuarios</Link>
-        </li>
-        <li className="nav-item dropdown">
-          <Link className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </Link>
-          <ul className="dropdown-menu">
-            <li><Link className="dropdown-item" href="#">Action</Link></li>
-            <li><Link className="dropdown-item" href="#">Another action</Link></li>
-            <li><hr className="dropdown-divider"/></li>
-            <li><Link className="dropdown-item" href="#">Something else here</Link></li>
-          </ul>
+          <Link className="nav-link" href="/productos/mostrarProductos">Productos</Link>
         </li>
         <li className="nav-item">
-          <Link href="" className="nav-link disabled" aria-disabled="true">Disabled</Link>
+          <Link className="nav-link" href="/ventas/mostrarVentas">Ventas</Link>
         </li>
       </ul>
       <form className="d-flex" role="search">
