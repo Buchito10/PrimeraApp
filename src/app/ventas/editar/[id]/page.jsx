@@ -9,20 +9,29 @@ export default function EditarVenta({ params }) {
     const [fecha, setFecha] = useState("");
     const [hora, setHora] = useState("");
     const [status, setStatus] = useState("");
+    const [productos, setProductos] = useState([]);
+    const [clientes, setClientes] = useState([]);
+    const [productoSeleccionado, setProductoSeleccionado] = useState("");
+    const [clienteSeleccionado, setClienteSeleccionado] = useState("");
     const router = useRouter();
     const { id } = params;
 
+    // Fetch data for the sale based on its ID
     useEffect(() => {
         async function fetchVentaData() {
             if (id) {
                 try {
-                    const response = await axios.get(`http://localhost:3000/buscarPorIdVenta/${id}`);
+                    const response = await axios.get(
+                        `http://localhost:3000/buscarPorIdVenta/${id}`
+                    );
                     const ventaData = response.data;
-                    setIdUsuario(ventaData.idUsuario);
-                    setIdProducto(ventaData.idProducto);
-                    setFecha(ventaData.fecha);
-                    setHora(ventaData.hora);
-                    setStatus(ventaData.status);
+                    setIdUsuario(ventaData.idUsuario || "");
+                    setClienteSeleccionado(ventaData.clienteNombre || "");
+                    setIdProducto(ventaData.idProducto || "");
+                    setProductoSeleccionado(ventaData.productoDescripcion || "");
+                    setFecha(ventaData.fecha || "");
+                    setHora(ventaData.hora || "");
+                    setStatus(ventaData.status || "vendido");
                 } catch (error) {
                     console.error("Error al cargar los datos de la venta:", error);
                 }
@@ -31,13 +40,45 @@ export default function EditarVenta({ params }) {
         fetchVentaData();
     }, [id]);
 
+    // Function to search for products dynamically
+    const buscarProductos = async (query) => {
+        if (!query) {
+            setProductos([]);
+            return;
+        }
+        const respuesta = await axios.get("http://localhost:3000/buscarP", {
+            params: { query },
+        });
+        setProductos(respuesta.data);
+    };
+
+    // Function to search for clients dynamically
+    const buscarClientes = async (query) => {
+        if (!query) {
+            setClientes([]);
+            return;
+        }
+        const respuesta = await axios.get("http://localhost:3000/buscar", {
+            params: { query },
+        });
+        setClientes(respuesta.data);
+    };
+
+    // Function to update the sale
     async function editarVenta(e) {
         e.preventDefault();
         const url = `http://localhost:3000/editarVenta/${id}`;
-        const datos = { idUsuario, idProducto, fecha, hora, status };
+        const datos = {
+            idUsuario,
+            idProducto,
+            fecha,
+            hora,
+            status,
+        };
 
         try {
             const respuesta = await axios.put(url, datos); 
+            console.log(respuesta.data);
             alert("Venta editada correctamente");
             router.push("/ventas/mostrarVentas");
         } catch (error) {
@@ -54,37 +95,91 @@ export default function EditarVenta({ params }) {
                         <h1>Editar Venta</h1>
                     </div>
                     <div className="card-body">
-                        <input 
-                            placeholder="ID Usuario" 
-                            className="form-control mb-3" 
-                            type="text" 
-                            value={idUsuario} 
-                            onChange={(e) => setIdUsuario(e.target.value)}
+                        <input
+                            placeholder="Cliente"
+                            className="form-control mb-3"
+                            id="idUsuario"
+                            value={clienteSeleccionado}
+                            data-id={idUsuario}
+                            onChange={(e) => {
+                                setClienteSeleccionado(e.target.value);
+                                buscarClientes(e.target.value);
+                            }}
+                            type="text"
+                            required
                         />
-                        <input 
-                            placeholder="ID Producto" 
-                            className="form-control mb-3" 
-                            type="text" 
-                            value={idProducto} 
-                            onChange={(e) => setIdProducto(e.target.value)}
+                        <ul style={{ listStyleType: "none", padding: 0 }}>
+                            {clientes.map((cliente) => (
+                                <li
+                                    key={cliente.id}
+                                    onClick={() => {
+                                        setClienteSeleccionado(cliente.nombre);
+                                        setIdUsuario(cliente.id);
+                                        setClientes([]);
+                                    }}
+                                    style={{
+                                        cursor: "pointer",
+                                        padding: "5px",
+                                        borderBottom: "1px solid #ccc",
+                                    }}
+                                >
+                                    {cliente.nombre}
+                                </li>
+                            ))}
+                        </ul>
+
+                        <input
+                            placeholder="Producto"
+                            className="form-control mb-3"
+                            id="idProducto"
+                            value={productoSeleccionado}
+                            data-id={idProducto}
+                            onChange={(e) => {
+                                setProductoSeleccionado(e.target.value);
+                                buscarProductos(e.target.value);
+                            }}
+                            type="text"
                         />
-                        <input 
-                            placeholder="Fecha" 
-                            className="form-control mb-3" 
-                            type="date" 
-                            value={fecha} 
+                        <ul style={{ listStyleType: "none", padding: 0 }}>
+                            {productos.map((producto) => (
+                                <li
+                                    key={producto.id}
+                                    onClick={() => {
+                                        setProductoSeleccionado(producto.descripcion);
+                                        setIdProducto(producto.id);
+                                        setProductos([]);
+                                    }}
+                                    style={{
+                                        cursor: "pointer",
+                                        padding: "5px",
+                                        borderBottom: "1px solid #ccc",
+                                    }}
+                                >
+                                    {producto.descripcion}
+                                </li>
+                            ))}
+                        </ul>
+
+                        <input
+                            placeholder="Fecha"
+                            className="form-control mb-3"
+                            id="fecha"
+                            type="date"
+                            value={fecha}
                             onChange={(e) => setFecha(e.target.value)}
                         />
-                        <input 
-                            placeholder="Hora" 
-                            className="form-control mb-3" 
-                            type="time" 
-                            value={hora} 
+                        <input
+                            placeholder="Hora"
+                            className="form-control mb-3"
+                            id="hora"
+                            type="time"
+                            value={hora}
                             onChange={(e) => setHora(e.target.value)}
                         />
-                        <select 
-                            className="form-control mb-3" 
-                            value={status} 
+                        <select
+                            className="form-control mb-3"
+                            id="estatus"
+                            value={status}
                             onChange={(e) => setStatus(e.target.value)}
                         >
                             <option value="vendido">Vendido</option>
